@@ -11,7 +11,7 @@ on:
 permissions:
   contents: write
   pages: write
-  
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -41,11 +41,11 @@ jobs:
           mkdir -p reports
           behave -f html -o reports/index.html 
 
-      - name: Upload Report Artifact (Optional)
+      - name: Upload Report Artifact
         uses: actions/upload-artifact@v3
         with:
           name: behave-report
-          path: reports/index.html
+          path: reports/  # Upload the entire reports directory
 
   deploy:
     needs: test
@@ -56,10 +56,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Download Report Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: behave-report
+          path: ./reports  # Download to the reports directory
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./reports
-          # If your report is named differently, adjust the publish_dir accordingly
-          # Example: if you have multiple reports or nested directories
+          publish_branch: gh-pages
+          allow_empty_commit: false
+          keep_files: false
+          force_orphan: false
+          enable_jekyll: false
+          disable_nojekyll: false
+          exclude_assets: .github
