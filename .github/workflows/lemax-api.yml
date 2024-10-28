@@ -1,0 +1,61 @@
+name: Behave API Testing Report for Lemax Booking User Flow
+
+on:
+  push:
+    branches:
+      - main  # or your default branch
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'  # specify your Python version
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install behave-html-formatter
+
+      - name: Run API Tests for Lemax Booking User Flow
+        env:
+          TOKEN_URL: ${{ secrets.TOKEN_URL }}
+          BASE_URL: ${{ secrets.BASE_URL }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        run: |
+          mkdir -p reports
+          behave -f html -o reports/index.html 
+
+      - name: Upload Report Artifact (Optional)
+        uses: actions/upload-artifact@v3
+        with:
+          name: behave-report
+          path: reports/index.html
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./reports
+          # If your report is named differently, adjust the publish_dir accordingly
+          # Example: if you have multiple reports or nested directories
