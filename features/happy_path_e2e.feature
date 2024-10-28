@@ -39,8 +39,16 @@ Feature: Check if happy path for e2e booking is working
 
   Scenario: Verify that booking CANNOT be done with valid booking reference and invalid payload
     Given Cart Id is present
-    When I send valid payload so to make booking
+    When I send invalid payload so to make booking
     Then Booking cant be made because externalIdentifier is already used
+
+
+  Scenario: Verify that get booking endpoint is created and returned booking data
+    Given Cart Id is present
+    When I send valid payload so to make booking
+    Then A unique booking identifier is returned that can be used for further booking amends
+    And A booking endpoint returnes valid status code
+    And Booking data is returned
     
 
 

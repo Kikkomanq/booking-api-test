@@ -6,14 +6,7 @@ from dotenv import load_dotenv
 
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s %(levelname)s:%(message)s',
-    handlers=[
-        logging.FileHandler("api_info.log"),
-        logging.StreamHandler()
-    ]
-)
+logger = logging.getLogger(__name__)
 
 def before_all(context):
     load_dotenv()

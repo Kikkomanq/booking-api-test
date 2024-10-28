@@ -2,7 +2,10 @@ from behave import given, when, then
 import requests
 import random
 import string
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 @given('I set GET method for tours endpoint')
 def step_impl(context):
@@ -189,9 +192,37 @@ def step_then(context, text):
 def step_then(context):
     response_json = context.response.json()
     assert context.response.status_code == 201, f"Expected status 201, got {context.response.status_code}"
+    logger.info(f"{response_json}")
+    bookingId=response_json['bookingId'].strip() 
+    context.bookingId=bookingId
+    print(f"bookingid={bookingId}")
     assert response_json['bookingId'].strip() != "", "bookingId is empty"
     assert response_json['bookingCode'].strip() != "", "bookingCode is empty"
 
+@when('I send invalid payload so to make booking')
+def step_when(context):
+    cart_id=context.cart_id
+    context.api_endpoint = f"{context.base_url}/v1/carts/{cart_id}/reserve"
+    context.response = requests.post(context.api_endpoint, headers=context.headers)
+    context.api_endpoint = f"{context.base_url}/v1/carts/{cart_id}/book"
+    # booking payload saved in seperate file
+    # TODO
+    # Create payload generator with fake and variable data
+    # payload=context.bookingPayload
+
+    payload = context.bookingPayload
+    context.response = requests.post(context.api_endpoint, headers=context.headers, json=payload)
+
 @then('Booking cant be made because externalIdentifier is already used')
 def step_then(context):
-    assert context.response.status_code == 201, f"Expected status 201, got {context.response.status_code}"
+    assert context.response.status_code == 400, f"Expected status 400, got {context.response.status_code}"  
+    
+@then('A booking endpoint returnes valid status code')
+def step_then(context):
+    print(context.bookingId)
+    context.api_endpoint = f"{context.base_url}/v1/bookings/{context.bookingId}"
+    context.response = requests.get(context.api_endpoint, headers=context.headers)
+
+@then('Booking data is returned')
+def step_when(context):
+    assert context.response.status_code == 200, f"Expected status 200, got {context.response.status_code}"  
