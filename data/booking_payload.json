@@ -1,0 +1,33 @@
+{
+    "customer": {
+      "title": "Mr.",
+      "firstName": "Tony",
+      "lastName": "Stark",
+      "middleName": "Edward",
+      "email": "tony.stark@starkindustries.com",
+      "contactNumber": "+1 (555) 987-6543",
+      "address": {
+        "countryCode": "US",
+        "state": "California",
+        "city": "Malibu",
+        "streetName": "Malibu Point",
+        "streetNumber": "10880",
+        "postalCode": "90265"
+      }
+    },
+    "payment": {
+      "price": {
+        "amount": 153.4,
+        "currencyCode": "USD"
+      },
+      "formOfPayment": "Credit card",
+      "externalIdentifier": "24041311167000042529377"
+    },
+    "note": "Very special booking requirements",
+    "status": "Confirmed",
+    "additionalInformation": {
+      "customInfoParameter1": "custom value 1",
+      "customInfoParameter2": "custom value 2",
+      "customInfoParameter3": "custom value 3"
+    }
+  }

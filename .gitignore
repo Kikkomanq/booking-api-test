@@ -1,0 +1,6 @@
+.venv/
+.vscode/
+.env
+features/__pycache__/environment.cpython-310.pyc
+utils/__pycache__/auth.cpython-310.pyc
+api_info.log
