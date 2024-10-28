@@ -31,8 +31,16 @@ Feature: Check if happy path for e2e booking is working
     When I send cart Id to reserve endpoint
     Then Selected Tour should be reserved with message "Item reserved"
 
+  Scenario: Verify that booking can be done with valid booking reference and valid payload
+    Given Cart Id is present
+    When I send valid payload so to make booking
+    Then A unique booking identifier is returned that can be used for further booking amends
 
 
+  Scenario: Verify that booking CANNOT be done with valid booking reference and invalid payload
+    Given Cart Id is present
+    When I send valid payload so to make booking
+    Then Booking cant be made because externalIdentifier is already used
     
 
 

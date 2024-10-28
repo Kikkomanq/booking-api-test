@@ -1,5 +1,8 @@
 from behave import given, when, then
 import requests
+import random
+import string
+
 
 @given('I set GET method for tours endpoint')
 def step_impl(context):
@@ -130,11 +133,14 @@ def step_when(context):
 @when('I send valid payload so to make booking')
 def step_when(context):
     cart_id=context.cart_id
+    context.api_endpoint = f"{context.base_url}/v1/carts/{cart_id}/reserve"
+    context.response = requests.post(context.api_endpoint, headers=context.headers)
     context.api_endpoint = f"{context.base_url}/v1/carts/{cart_id}/book"
     # booking payload saved in seperate file
     # TODO
     # Create payload generator with fake and variable data
     # payload=context.bookingPayload
+
     payload = {
         "customer": {
             "title": "Mr.",
@@ -158,7 +164,7 @@ def step_when(context):
                 "currencyCode": "USD"
             },
             "formOfPayment": "Credit card",
-            "externalIdentifier": "24041311167000042529377"
+            "externalIdentifier": ''.join(random.choices(string.digits, k=23))
         },
         "note": "Very special booking requirements",
         "status": "Confirmed",
@@ -168,8 +174,8 @@ def step_when(context):
             "customInfoParameter3": "custom value 3"
         }
     }
+
     context.response = requests.post(context.api_endpoint, headers=context.headers, json=payload)
-    assert context.response.status_code == 200, f"Expected status 200, got {context.response.status_code}"
 
 @then('Selected Tour should be reserved with message "{text}"')
 def step_then(context, text):
@@ -179,3 +185,13 @@ def step_then(context, text):
     assert code=='RESERVED', "Tour is not bookable"
     assert message_json==text, "Message is not correct"
    
+@then('A unique booking identifier is returned that can be used for further booking amends')
+def step_then(context):
+    response_json = context.response.json()
+    assert context.response.status_code == 201, f"Expected status 201, got {context.response.status_code}"
+    assert response_json['bookingId'].strip() != "", "bookingId is empty"
+    assert response_json['bookingCode'].strip() != "", "bookingCode is empty"
+
+@then('Booking cant be made because externalIdentifier is already used')
+def step_then(context):
+    assert context.response.status_code == 201, f"Expected status 201, got {context.response.status_code}"
