@@ -39,7 +39,9 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         run: |
           mkdir -p reports
-          behave -f html -o reports/index.html 
+          behave -f html -o reports/index.html
+          echo "Behave tests completed."
+          ls -la reports/ 
 
       - name: Upload Report Artifact
         uses: actions/upload-artifact@v3
