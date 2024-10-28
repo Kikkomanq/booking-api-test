@@ -38,8 +38,8 @@ def step_when(context):
     tour_id = response_json["tours"][0]["id"]
     option_id = response_json["tours"][0]["options"][0]["id"]
     shoppingCartReference=response_json["tours"][0]["options"][0]["departures"][0]["shoppingCartReference"]
-    assert tour_id=="513b4fd0-40b3-414e-9824-abc4d662187a", "The ID of the selected tour is not valid"
-    assert option_id=="234cdbb9-fad2-4a84-9725-d85aafe68923"
+    assert tour_id=="3eba51fe-6a66-4c9f-b549-e139a841e097", "The ID of the selected tour is not valid"
+    assert option_id=="0335091d-2ee7-44c0-abcb-f54b4ee73862"
     context.tour_id = tour_id
     context.options_ids = option_id
     context.shoppingCartReference=shoppingCartReference

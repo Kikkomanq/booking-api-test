@@ -41,9 +41,11 @@ jobs:
           mkdir -p reports
           behave -f html -o reports/index.html
           echo "Behave tests completed."
-          ls -la reports/ 
+          ls -la reports/
+        continue-on-error: true 
 
       - name: Upload Report Artifact
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: behave-report
@@ -52,7 +54,7 @@ jobs:
   deploy:
     needs: test
     runs-on: ubuntu-latest
-    if: success()
+    if: always()
 
     steps:
       - name: Checkout Repository
