@@ -225,4 +225,6 @@ def step_then(context):
 
 @then('Booking data is returned')
 def step_when(context):
-    assert context.response.status_code == 200, f"Expected status 200, got {context.response.status_code}"  
+    response_json = context.response.json()
+    assert context.response.status_code == 200, f"Expected status 200, got {context.response.status_code}"      
+    assert response_json['customer']["email"]=="tony.stark@starkindustries.com", f"customer email is not returned"
