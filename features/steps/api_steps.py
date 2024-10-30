@@ -1,9 +1,9 @@
-from behave import given, when, then
 import requests
 import random
 import string
 import logging
-
+from behave import given, when, then
+from utils.json_loader import load_json
 
 logger = logging.getLogger(__name__)
 
@@ -38,14 +38,12 @@ def step_when(context):
     tour_id = response_json["tours"][0]["id"]
     option_id = response_json["tours"][0]["options"][0]["id"]
     shoppingCartReference=response_json["tours"][0]["options"][0]["departures"][0]["shoppingCartReference"]
-    assert tour_id=="3eba51fe-6a66-4c9f-b549-e139a841e097", "The ID of the selected tour is not valid"
-    assert option_id=="0335091d-2ee7-44c0-abcb-f54b4ee73862"
     context.tour_id = tour_id
     context.options_ids = option_id
     context.shoppingCartReference=shoppingCartReference
 
-@then('I send tour ID and Option ID')
-def step_then(context):
+@when('I send tour ID and Option ID')
+def step_when(context):
     tour_id = context.tour_id
     options_id = context.options_ids
     context.api_endpoint = f"{context.base_url}/v1/tours/{tour_id}/options/{options_id}"
@@ -53,7 +51,7 @@ def step_then(context):
     assert context.response.status_code == 200, f"Expected status 200, got {context.response.status_code}"
     # assert shopping cart is not empty
 
-@then('optionalServices and ShoppingCartReference is generated')
+@then('ShoppingCartReference is generated')
 def step_impl(context):
     response_json=context.response.json()
     shoppingCartReference=response_json["departures"][0]["optionalServices"][0]["shoppingCartReference"]
@@ -61,8 +59,11 @@ def step_impl(context):
 
 @given('optionalServices and ShoppingCartReference is generated')
 def step_impl(context):
-    tour_id="7c629e71-bcfd-450e-92bf-fac36fb6792a"
-    option_id="9216f916-0d09-456d-9d5b-fdf86a40b512"
+    context.api_endpoint = f"{context.base_url}/v1/tours"
+    context.response = requests.get(context.api_endpoint, headers=context.headers)
+    response_json=context.response.json()
+    tour_id = response_json["tours"][0]["id"]
+    option_id = response_json["tours"][0]["options"][0]["id"]
     context.api_endpoint = f"{context.base_url}/v1/tours/{tour_id}/options/{option_id}"
     context.response = requests.get(context.api_endpoint, headers=context.headers)
     response_json=context.response.json()
@@ -96,15 +97,9 @@ def step_given(context):
     assert context.response.status_code == 200, f"Expected status 200, got {context.response.status_code}"
 
 @given('Cart Id is present')
-def step_given(context):
+def step_given(context):   
     context.api_endpoint = f"{context.base_url}/v1/carts"
-    payload = {
-        "items": [
-            {
-                "reference": "eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ5IjowLCJwIjoiSGlyaW5nIiwidCI6IjdjNjI5ZTcxLWJjZmQtNDUwZS05MmJmLWZhYzM2ZmI2NzkyYSIsIm8iOiI5MjE2ZjkxNi0wZDA5LTQ1NmQtOWQ1Yi1mZGY4NmE0MGI1MTIiLCJkYyI6IjI3MjgiLCJkIjo2Mzg5NTk5NjgwMDAwMDAwMDAsImMiOiJVU0QiLCJuIjoxLCJhIjpbXSwiciI6IjE3NTAiLCJkaSI6IjJkMzYxYmZlLWVjNmMtNDI5OS1hOWMwLWVkMThkNWVkMmFkMiIsImRzYyI6bnVsbH0."
-            }
-        ]
-    }
+    payload = load_json('../data/cartReference.json')
     context.response = requests.post(context.api_endpoint, headers=context.headers, json=payload)
     assert context.response.status_code == 201, f"Expected status 201, got {context.response.status_code}"
     response_json = context.response.json()
@@ -210,7 +205,7 @@ def step_when(context):
     # Create payload generator with fake and variable data
     # payload=context.bookingPayload
 
-    payload = context.bookingPayload
+    payload =  load_json('../data/booking_payload.json')
     context.response = requests.post(context.api_endpoint, headers=context.headers, json=payload)
 
 @then('Booking cant be made because externalIdentifier is already used')

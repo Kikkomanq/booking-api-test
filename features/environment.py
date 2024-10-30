@@ -1,8 +1,9 @@
 import logging
 from utils.auth import get_bearer_token
+from dotenv import load_dotenv
+from behave import use_fixture
 import os
 import json
-from dotenv import load_dotenv
 
 
 # Configure logging
@@ -26,11 +27,6 @@ def before_all(context):
     else:
         logging.info("token cannot be generated")
 
-    # read json load for booking passangers
-    script_dir = os.path.dirname(__file__)
-    rel_path = '../data/booking_payload.json'
-    abs_file_path = os.path.join(script_dir, rel_path)
-    with open(abs_file_path, 'r', encoding='utf-8') as json_file:
-        context.bookingPayload = json.load(json_file)
-
-    
+def before_tag(context, tag):
+    if tag == "cartId_needed":
+        use_fixture(context, timeout=10)

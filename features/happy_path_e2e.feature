@@ -14,8 +14,8 @@ Feature: Check if happy path for e2e booking is working
   Scenario: Retrieve details and optional services of first selected tour
     Given I get the results of tours endpoint
     When I get the tour ID and Option ID
-    Then I send tour ID and Option ID
-    And optionalServices and ShoppingCartReference is generated
+    And I send tour ID and Option ID
+    Then ShoppingCartReference is generated
 
   @regression  @v3.5.0
   Scenario: Verify that cart reference id is generated
